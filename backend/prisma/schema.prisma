@@ -1,0 +1,132 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Agent {
+  id          String   @id @default(uuid())
+  name        String
+  type        String
+  status      String   @default("idle")
+  metadata    Json?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  traces           Trace[]
+  memorySnapshots  MemorySnapshot[]
+  decisions        Decision[]
+  metrics          Metric[]
+  communications   AgentCommunication @relation("fromAgent")
+  receivedComm     AgentCommunication @relation("toAgent")
+}
+
+model Session {
+  id          String   @id @default(uuid())
+  name        String
+  agentId     String
+  agent       Agent    @relation(fields: [agentId], references: [id])
+  startedAt   DateTime @default(now())
+  endedAt     DateTime?
+  
+  traces Trace[]
+}
+
+model Trace {
+  id          String   @id @default(uuid())
+  agentId     String
+  agent       Agent    @relation(fields: [agentId], references: [id])
+  sessionId   String?
+  session     Session? @relation(fields: [sessionId], references: [id])
+  
+  timestamp   DateTime @default(now())
+  action      String
+  toolName    String?
+  input       Json?
+  output      Json?
+  tokensUsed  Int?
+  cost        Float?
+  error       String?
+  duration    Int?
+  status      String   @default("success")
+  
+  memorySnapshotId String?
+  memorySnapshot   MemorySnapshot? @relation(fields: [memorySnapshotId], references: [id])
+  
+  createdAt   DateTime @default(now())
+}
+
+model MemorySnapshot {
+  id              String   @id @default(uuid())
+  agentId         String
+  agent           Agent    @relation(fields: [agentId], references: [id])
+  
+  timestamp       DateTime @default(now())
+  totalMemory     Int
+  usedMemory      Int
+  contextWindow   Int?
+  maxContextWindow Int?
+  
+  traces Trace[]
+  
+  createdAt       DateTime @default(now())
+}
+
+model Decision {
+  id          String   @id @default(uuid())
+  agentId     String
+  agent       Agent    @relation(fields: [agentId], references: [id])
+  
+  timestamp   DateTime @default(now())
+  type        String   // "strategic" or "tactical"
+  reasoning   String?
+  result      String?
+  success     Boolean?
+  
+  createdAt   DateTime @default(now())
+}
+
+model Metric {
+  id          String   @id @default(uuid())
+  agentId     String
+  agent       Agent    @relation(fields: [agentId], references: [id])
+  
+  name        String
+  value       Float
+  timestamp   DateTime @default(now())
+  
+  createdAt   DateTime @default(now())
+  
+  @@index([agentId, name, timestamp])
+}
+
+model AgentCommunication {
+  id          String   @id @default(uuid())
+  fromAgentId String
+  fromAgent   Agent    @relation("fromAgent", fields: [fromAgentId], references: [id])
+  toAgentId   String
+  toAgent     Agent    @relation("toAgent", fields: [toAgentId], references: [id])
+  
+  timestamp   DateTime @default(now())
+  messageType String
+  payload     Json?
+  
+  createdAt   DateTime @default(now())
+}
+
+model Alert {
+  id          String   @id @default(uuid())
+  type        String
+  severity    String
+  message     String
+  agentId     String?
+  resolved    Boolean  @default(false)
+  
+  timestamp   DateTime @default(now())
+  resolvedAt  DateTime?
+  
+  createdAt   DateTime @default(now())
+}
