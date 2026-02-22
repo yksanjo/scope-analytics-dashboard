@@ -1,225 +1,82 @@
-# SCOPE Analytics Dashboard
+# scope-analytics-dashboard
 
-Enterprise real-time monitoring and visualization platform for agent execution traces. Track learning curves, memory utilization, strategic vs tactical decision patterns, and multi-agent system topology.
+## Detailed Description
 
-![Dashboard Preview](https://via.placeholder.com/800x400?text=SCOPE+Analytics+Dashboard)
+scope-analytics-dashboard is maintained as an industry-grade software project with production-ready engineering practices.  
+This repository includes documented setup, quality gates, operational guidance, and governance standards so contributors can safely build, test, and ship changes with confidence.
 
-## Features
+## Problem Statement
 
-- **Real-Time Agent Monitoring**: Live execution trace streaming via WebSocket
-- **Learning Curves**: Track success rates, token efficiency, task duration over time
-- **Memory Utilization**: Monitor context window consumption and detect memory leaks
-- **Decision Pattern Analysis**: Strategic vs Tactical decision classification and visualization
-- **Multi-Agent Topology**: Visualize agent networks and communication patterns
-- **Enterprise-Ready**: PostgreSQL storage, RESTful API, WebSocket support
+Describe the user or business problem this project solves, the target users, and expected outcomes.
 
-## Tech Stack
+## Solution Overview
 
-### Backend
-- Node.js + Express
-- TypeScript
-- PostgreSQL with Prisma ORM
-- WebSocket (ws) for real-time updates
+Summarize the architecture, core modules, and runtime behavior at a high level.
 
-### Frontend
-- Next.js 14 (App Router)
-- React 18
-- TypeScript
-- Recharts for visualizations
-- Tailwind CSS
-- Zustand for state management
+## Key Features
 
-## Quick Start
+- Clear project scope and intended use.
+- Reproducible local development workflow.
+- Test coverage and CI quality gates.
+- Security and contribution policies.
+- Deployment-ready repository structure.
+
+## Repository Structure
+
+```text
+.
+|-- src/                  # Core implementation
+|-- tests/                # Automated test suites
+|-- docs/                 # Design notes and operational docs
+|-- .github/workflows/    # CI pipelines
+|-- README.md
+|-- LICENSE
+|-- CONTRIBUTING.md
+|-- SECURITY.md
+|-- CODE_OF_CONDUCT.md
+```
+
+## Getting Started
 
 ### Prerequisites
-- Node.js 18+
-- PostgreSQL 14+ (or Docker)
 
-### Option 1: Local Development
+- Git
+- Project runtime/toolchain for this repo
 
-1. **Clone and install dependencies**
-
-```bash
-# Backend
-cd backend
-npm install
-
-# Frontend
-cd ../frontend
-npm install
-```
-
-2. **Set up PostgreSQL**
+### Local Setup
 
 ```bash
-# Create database
-createdb scope_analytics
-
-# Copy environment file
-cp ../.env.example .env
-# Edit .env with your database URL
+make test
+make lint
 ```
 
-3. **Run Prisma migrations**
+## Usage
 
-```bash
-cd backend
-npx prisma generate
-npx prisma db push
-```
+Document primary commands, API routes, CLI examples, or UI workflows here.
 
-4. **Start the backend**
+## Quality Standards
 
-```bash
-npm run dev
-# Runs on http://localhost:3001
-```
+- CI must pass before merge.
+- Changes require tests for critical behavior.
+- Security-sensitive changes should include risk notes.
+- Keep pull requests focused and reviewable.
 
-5. **Start the frontend** (in a new terminal)
+## Security
 
-```bash
-cd frontend
-npm run dev
-# Runs on http://localhost:3000
-```
+See `SECURITY.md` for responsible disclosure and handling guidelines.
 
-### Option 2: Docker
+## Contributing
 
-```bash
-# Start all services
-docker-compose up -d
+See `CONTRIBUTING.md` for branching, commit, and pull request expectations.
 
-# View logs
-docker-compose logs -f
-```
+## Roadmap
 
-## API Endpoints
+Track upcoming milestones, technical debt, and planned feature work.
 
-### Agents
-- `GET /api/agents` - List all agents
-- `GET /api/agents/:id` - Get agent details
-- `POST /api/agents` - Create agent
-- `PATCH /api/agents/:id` - Update agent
+## Support
 
-### Traces
-- `GET /api/traces` - List traces (with filters)
-- `GET /api/traces/:id` - Get trace details
-
-### Metrics
-- `GET /api/metrics` - Get metrics
-- `GET /api/metrics/summary` - Get metrics summary
-
-### Decisions
-- `GET /api/decisions` - Get decisions
-- `GET /api/decisions/summary` - Get decision summary
-
-### Learning Curves
-- `GET /api/learning-curves` - Get learning curve data
-
-### Memory
-- `GET /api/memory` - Get memory snapshots
-
-### Topology
-- `GET /api/topology` - Get agent topology
-
-### Dashboard
-- `GET /api/overview` - Get dashboard overview
-
-## WebSocket Messages
-
-Connect to `ws://localhost:3001` and send JSON messages:
-
-```javascript
-// Register for updates
-{ "type": "register", "agentId": "agent-123" }
-
-// Submit trace
-{
-  "type": "trace",
-  "agentId": "agent-123",
-  "sessionId": "session-456",
-  "action": "search",
-  "toolName": "web_search",
-  "tokensUsed": 1200,
-  "cost": 0.0024,
-  "status": "success"
-}
-
-// Submit metric
-{
-  "type": "metric",
-  "agentId": "agent-123",
-  "name": "success_rate",
-  "value": 0.85
-}
-
-// Submit decision
-{
-  "type": "decision",
-  "agentId": "agent-123",
-  "decisionType": "strategic",
-  "reasoning": "Analyzing best approach",
-  "success": true
-}
-
-// Memory snapshot
-{
-  "type": "memory_snapshot",
-  "agentId": "agent-123",
-  "totalMemory": 8000000000,
-  "usedMemory": 5000000000,
-  "contextWindow": 75000,
-  "maxContextWindow": 100000
-}
-
-// Heartbeat
-{
-  "type": "heartbeat",
-  "agentId": "agent-123",
-  "status": "running"
-}
-```
-
-## Project Structure
-
-```
-scope-analytics-dashboard/
-├── backend/
-│   ├── src/
-│   │   └── index.ts          # Main server entry
-│   ├── prisma/
-│   │   └── schema.prisma     # Database schema
-│   ├── package.json
-│   └── tsconfig.json
-├── frontend/
-│   ├── src/
-│   │   ├── app/
-│   │   │   ├── page.tsx     # Main dashboard page
-│   │   │   ├── layout.tsx   # Root layout
-│   │   │   └── globals.css  # Global styles
-│   │   └── components/      # Reusable components
-│   ├── package.json
-│   ├── tailwind.config.js
-│   └── next.config.js
-├── docker-compose.yml
-├── .env.example
-├── SPEC.md
-└── README.md
-```
-
-## Development
-
-### Adding New Visualizations
-
-1. Create component in `frontend/src/components/charts/`
-2. Import and use in `frontend/src/app/page.tsx`
-
-### Database Schema Changes
-
-1. Edit `backend/prisma/schema.prisma`
-2. Run `npx prisma generate`
-3. Run `npx prisma db push`
+Open a GitHub issue for bugs, feature requests, or documentation gaps.
 
 ## License
 
-MIT License - feel free to use for your own projects.
+This project is released under the MIT License.
